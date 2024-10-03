@@ -6,7 +6,16 @@ const getItems = require('./routes/getItems');
 const addItem = require('./routes/addItem');
 const updateItem = require('./routes/updateItem');
 const deleteItem = require('./routes/deleteItem');
-
+const getItemCount = async (req, res) => {
+    try {
+        const items = await db.getAll();
+        const itemCount = items.length;
+        res.status(200).send({ count: itemCount });
+    } catch (error) {
+        console.error('Error retrieving item count:', error);
+        res.status(500).send('Error retrieving item count');
+    }
+};
 app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
@@ -15,7 +24,7 @@ app.get('/api/items', getItems);
 app.post('/api/items', addItem);
 app.put('/api/items/:id', updateItem);
 app.delete('/api/items/:id', deleteItem);
-
+app.get('/api/items/count', getItemCount);
 db.init()
     .then(() => {
         app.listen(3000, () => console.log('Listening on port 3000'));
